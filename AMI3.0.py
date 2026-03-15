@@ -10,7 +10,7 @@ kakasi.setMode('K', 'a')
 kakasi.setMode('J', 'a')
 conv = kakasi.getConverter()
 
-# 偽裝瀏覽器
+# 偽裝瀏覽器#
 x=str(input("輸入動畫季度:"))
 url="https://acgsecrets.hk/bangumi/"+x+"/"
 # 模擬請求頭

@@ -2,7 +2,7 @@ import pymysql
 from T0923178_p import SSq1
 import time
 
-#導入、搜尋、更改#
+#導入、搜尋、更改
 
 class PoJie():
     def __init__(self,path):
