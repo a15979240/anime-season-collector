@@ -34,7 +34,7 @@ finCT0=re_d.findall(da)#中
 # print(finCT)
 
 fo0=reo.findall(da)#日
-# 重整# 
+# 重整
 finCT=[]
 for i in range(len(finCT0)):
     if '</h3><div class="entity_alternative_name">' in finCT0[i]:
