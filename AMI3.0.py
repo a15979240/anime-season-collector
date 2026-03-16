@@ -25,60 +25,67 @@ headers={
 req=urllib.request.Request(url,headers=headers)
 # 發起請求
 response=urllib.request.urlopen(req)
+# 轉碼
 da=response.read().decode("utf-8")
 # 讀取一行
 # da=response.readline()
+# 資料清洗取繁中名稱
 re_d=re.compile(r'<div class="anime_info anime_names site-content-float"><h3 class="entity_localized_name">(.*?)</h3><div class="notranslate entity_original_name">')
+fin_ANI_name_CT0=re_d.findall(da)#中
+# 資料清洗取日文名稱
 reo=re.compile(r'</div><div class="notranslate entity_original_name">(.*?)</div></div><div class="anime_specs"><div class="anime_tag">')
-finCT0=re_d.findall(da)#中
-# print(finCT)
+fin_ANI_name_JP0=reo.findall(da)#日
+# print(fin_ANI_name_CT)
 
-fo0=reo.findall(da)#日
+
 # 重整
-finCT=[]
-for i in range(len(finCT0)):
-    if '</h3><div class="entity_alternative_name">' in finCT0[i]:
-        finCT_t1=str(finCT0[i]).split('</h3><div class="entity_alternative_name">')
+# 繁中
+fin_ANI_name_CT=[]
+for i in range(len(fin_ANI_name_CT0)):
+    if '</h3><div class="entity_alternative_name">' in fin_ANI_name_CT0[i]:
+        finCT_t1=str(fin_ANI_name_CT0[i]).split('</h3><div class="entity_alternative_name">')
         finCT_t1=finCT_t1[0]
-        finCT.append(finCT_t1)
-        finCT_t2=str(finCT0[i]).split('<h3 class="entity_localized_name">')
+        fin_ANI_name_CT.append(finCT_t1)
+        finCT_t2=str(fin_ANI_name_CT0[i]).split('<h3 class="entity_localized_name">')
         finCT_t2=finCT_t2[-1]
-        finCT.append(finCT_t2)
+        fin_ANI_name_CT.append(finCT_t2)
     else:
-        finCT.append(finCT0[i])
-fo=[]
-for i in range(len(fo0)):
-    if '</div></div><div class="anime_info main site-content-float">' in fo0[i]:
-        fo_t1=str(fo0[i]).split('</div></div><div class="anime_info main site-content-float">')
+        fin_ANI_name_CT.append(fin_ANI_name_CT0[i])
+# 日文
+fin_ANI_name_JP=[]
+for i in range(len(fin_ANI_name_JP0)):
+    if '</div></div><div class="anime_info main site-content-float">' in fin_ANI_name_JP0[i]:
+        fo_t1=str(fin_ANI_name_JP0[i]).split('</div></div><div class="anime_info main site-content-float">')
         fo_t1=fo_t1[0]
-        fo.append(fo_t1)
+        fin_ANI_name_JP.append(fo_t1)
         
     else:
-        fo.append(fo0[i])
+        fin_ANI_name_JP.append(fin_ANI_name_JP0[i])
 
 
 
-
+# 日文名稱轉羅馬拼音
 foJE=[]
-for i in range(len(fo)):
-    foe=conv.do(fo[i])
+for i in range(len(fin_ANI_name_JP)):
+    foe=conv.do(fin_ANI_name_JP[i])
     foJE.insert(i,foe)
 print(foJE)
 
-print(finCT)
+print(fin_ANI_name_CT)
 # </h3><div class="entity_alternative_name">
+# 組合中日羅
 finCTJE=[]
-finCT1=''
-for j in range(len(finCT)):
-    # finCT1=str(finCT[j]).split('</h3><div class="entity_alternative_name">')
+# finCT1=''
+for j in range(len(fin_ANI_name_CT)):
+    # finCT1=str(fin_ANI_name_CT[j]).split('</h3><div class="entity_alternative_name">')
     # finCT1=finCT1[0]
-    f=finCT[j]+"_"+fo[j]+"_"+foJE[j]#中日羅
+    f=fin_ANI_name_CT[j]+"_"+fin_ANI_name_JP[j]+"_"+foJE[j]#中日羅
     finCTJE.insert(j,f)
-print(type(finCTJE))
+print(type(finCTJE))#屬性檢查
 
-z="\n".join(fo)
+z="\n".join(fin_ANI_name_JP)
 Flist=finCTJE
-
+# 建立TXT清單
 SEC=str(input("是否建立整合TXT檔(Y/N):"))
 
 if SEC == "Y":
@@ -90,7 +97,7 @@ if SEC == "Y":
 else:
     print("執行結束")
 
-print(foJE[-2])
-z0=conv.do(z)
-
+# print(foJE[-2])
+# z0=conv.do(z)
+# 建立CSV檔或EXCEL
 # 中日羅整合，next gui列表
