@@ -3,6 +3,7 @@ import random
 import re
 import pykakasi
 from pykakasi import kakasi
+import pandas as pd
 
 kakasi = kakasi()
 kakasi.setMode('H', 'a')
@@ -75,19 +76,62 @@ print(fin_ANI_name_CT)
 # </h3><div class="entity_alternative_name">
 # 組合中日羅
 finCTJE=[]
+# EXCEL表頭
+Excel_listtemp=[
+    ["ID","繁中名","日文名","羅馬拼音"]
+]
 # finCT1=''
 for j in range(len(fin_ANI_name_CT)):
     # finCT1=str(fin_ANI_name_CT[j]).split('</h3><div class="entity_alternative_name">')
     # finCT1=finCT1[0]
+    ANINAMECJE_listtemp=[]
     f=fin_ANI_name_CT[j]+"_"+fin_ANI_name_JP[j]+"_"+foJE[j]#中日羅
+    ANINAMECJE_listtemp.append(str(j+1))#ID
+    ANINAMECJE_listtemp.append(fin_ANI_name_CT[j])
+    ANINAMECJE_listtemp.append(fin_ANI_name_JP[j])
+    ANINAMECJE_listtemp.append(foJE[j])
     finCTJE.insert(j,f)
-print(type(finCTJE))#屬性檢查
+    Excel_listtemp.append(ANINAMECJE_listtemp)
+print(type(finCTJE))#屬性檢查(人工檢查用)
 
-z="\n".join(fin_ANI_name_JP)
-Flist=finCTJE
+# 將第一列設為欄位名稱，其餘為資料內容
+df=pd.DataFrame(Excel_listtemp[1:], columns=Excel_listtemp[0])
+
+# 建立CSV檔或EXCEL
+excelQ=str(input("是否建立整合excel檔(Y/N):"))
+excelQ=excelQ.upper()#轉大寫
+# excelQ="Y"
+if excelQ == "Y":
+    # df.to_excel(r'E:\\VCB-ANIME\\已上傳\\'+x+'.xlsx', index=False)
+    # 寫入及欄寬自動調整
+    ANINAMEExcel='E:\\VCB-ANIME\\已上傳\\'+x+'.xlsx'
+    wr=pd.ExcelWriter(ANINAMEExcel,engine='xlsxwriter')
+    df.to_excel(wr,index=False,sheet_name='Sheet1')
+    worksheet=wr.sheets['Sheet1']
+
+    # 自動調整欄寬
+    for i,col in enumerate(df.columns):
+        # 計算該欄位最長的內容長度(個別調整)
+        if col == "ID":
+            column_len=5
+        elif col == "繁中名":
+            column_len=max(df[col].astype(str).str.len().max()*1.8,len(col))+5
+        elif col == "日文名":
+            column_len=max(df[col].astype(str).str.len().max()*1.8,len(col))+2
+        elif col == "羅馬拼音":
+            column_len=max(df[col].astype(str).str.len().max(),len(col))+2
+        # 設定欄寬(i是欄位索引，從0開始)
+        worksheet.set_column(i,i,column_len)
+    wr.close()
+    print("建立完成")
+else:
+    print("不建立")
+
+
 # 建立TXT清單
 SEC=str(input("是否建立整合TXT檔(Y/N):"))
-
+SEC=SEC.upper()#轉大寫
+# SEC="Y"
 if SEC == "Y":
     FCTJE=open(r'E:\\VCB-ANIME\\已上傳\\'+x+'.txt',"wb")
     FCTJE.write("\n".join(finCTJE).encode())#lis轉字串並寫入
@@ -95,8 +139,9 @@ if SEC == "Y":
     FCTJE.close()
     print("執行結束")
 else:
-    print("執行結束")
-
+    print("不建立，執行結束")
+# z="\n".join(fin_ANI_name_JP)
+# Flist=finCTJE
 # print(foJE[-2])
 # z0=conv.do(z)
 # 建立CSV檔或EXCEL
